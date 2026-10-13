@@ -36,19 +36,19 @@ None. This should be completed first.
 **Goal:** Provide a working POS entry interface that stores transactions in Google Sheets.
 
 ### Tasks
-- [ ] Implement the POS UI using Apps Script HTML service.
-- [ ] Validate required fields, quantities, and amounts.
-- [ ] Save accepted transactions to the designated sheet.
-- [ ] Generate a unique transaction ID and creation timestamp.
-- [ ] Prevent duplicate submission where practical.
-- [ ] Show clear success and validation/error messages.
+- [/] Implement the POS UI using Apps Script HTML service.
+- [/] Validate required fields, quantities, and amounts.
+- [/] Save accepted transactions to the designated sheet.
+- [/] Generate a unique transaction ID and creation timestamp.
+- [/] Prevent duplicate submission where practical.
+- [/] Show clear success and validation/error messages.
 
 ### Acceptance criteria
-- [ ] A valid sale creates one correctly structured row.
-- [ ] Invalid input is rejected with a useful message.
-- [ ] Duplicate clicks or retries do not silently create duplicate transactions.
-- [ ] The sheet structure matches Issue 1's data contract.
-- [ ] Deployment and permissions are documented.
+- [/] A valid sale creates one correctly structured row. *(verify with `runPosSelfTest` after deploying — see `appscript-pos/README.md`; offline logic check `node tests/pos-code.test.js` passes)*
+- [/] Invalid input is rejected with a useful message. *(covered by the same self-test)*
+- [/] Duplicate clicks or retries do not silently create duplicate transactions. *(covered by the same self-test)*
+- [/] The sheet structure matches Issue 1's data contract.
+- [/] Deployment and permissions are documented.
 
 ### Dependencies
 Issue 1.

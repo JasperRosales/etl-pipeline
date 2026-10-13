@@ -30,5 +30,8 @@ placeholders, and keep the local file untracked.
 
 The complete field contract is documented in
 [`docs/schema.md`](docs/schema.md). The planned repository layout is described
-in [`docs/architecture.md`](docs/architecture.md).
+in [`docs/architecture.md`](docs/architecture.md). Google Apps Script POS
+deployment, permissions, and self-test steps are documented in
+[`appscript-pos/README.md`](appscript-pos/README.md), and the POS logic can be
+verified offline with `node tests/pos-code.test.js`.
 

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S.A.L.S.A. POS</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --brand: #2563eb;
+      --ok: #15803d;
+      --ok-bg: #f0fdf4;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --err: #b91c1c;
+      --err-bg: #fef2f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f1f5f9;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 560px;
+      height: fit-content;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+      padding: 24px;
+    }
+    h1 { margin: 0; font-size: 1.35rem; }
+    .sub { margin: 4px 0 18px; color: var(--muted); font-size: .85rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: .8rem; font-weight: 600; }
+    .req { color: var(--err); }
+    input, select, textarea {
+      font: inherit;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #bfdbfe;
+      border-color: var(--brand);
+    }
+    .invalid { border-color: var(--err) !important; background: #fff5f5; }
+    .field-error { font-size: .75rem; color: var(--err); margin: 0; }
+    .feedback {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: .85rem;
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+    .feedback ul { margin: 0; padding-left: 18px; }
+    .feedback p { margin: 0; }
+    .success { background: var(--ok-bg); color: var(--ok); border-color: #bbf7d0; }
+    .warn { background: var(--warn-bg); color: var(--warn); border-color: #fde68a; }
+    .error { background: var(--err-bg); color: var(--err); border-color: #fecaca; }
+    .info { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .actions { display: flex; gap: 10px; margin-top: 18px; }
+    button {
+      font: inherit;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 11px 16px;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    #save-btn { background: var(--brand); color: #fff; flex: 1; }
+    #save-btn:disabled { opacity: .6; cursor: not-allowed; }
+    #reset-btn { background: #fff; color: var(--ink); border-color: var(--line); }
+    footer { margin-top: 16px; font-size: .72rem; color: var(--muted); line-height: 1.5; }
+    @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>S.A.L.S.A. POS</h1>
+    <p class="sub">Records one sale per row in the <strong>Transactions</strong> tab &middot; contract: <code>docs/schema.md</code></p>
+
+    <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
+
+    <form id="sale-form" novalidate>
+      <div class="grid">
+        <div class="field">
+          <label for="productId">Product ID <span class="req">*</span></label>
+          <input id="productId" type="text" maxlength="64" autocomplete="off" placeholder="SKU-001">
+          <p class="field-error" data-error-for="productId"></p>
+        </div>
+        <div class="field">
+          <label for="productName">Product name <span class="req">*</span></label>
+          <input id="productName" type="text" maxlength="120" autocomplete="off" placeholder="Example Product">
+          <p class="field-error" data-error-for="productName"></p>
+        </div>
+        <div class="field">
+          <label for="quantity">Quantity <span class="req">*</span></label>
+          <input id="quantity" type="text" inputmode="numeric" autocomplete="off" placeholder="1">
+          <p class="field-error" data-error-for="quantity"></p>
+        </div>
+        <div class="field">
+          <label for="unitPrice">Unit price <span class="req">*</span></label>
+          <input id="unitPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="12.50">
+          <p class="field-error" data-error-for="unitPrice"></p>
+        </div>
+        <div class="field">
+          <label for="currency">Currency <span class="req">*</span></label>
+          <input id="currency" type="text" maxlength="3" autocomplete="off" value="USD">
+          <p class="field-error" data-error-for="currency"></p>
+        </div>
+        <div class="field">
+          <label for="paymentMethod">Payment method <span class="req">*</span></label>
+          <select id="paymentMethod">
+            <option value="">Select&hellip;</option>
+            <option value="cash">cash</option>
+            <option value="card">card</option>
+            <option value="other">other</option>
+          </select>
+          <p class="field-error" data-error-for="paymentMethod"></p>
+        </div>
+        <div class="field full">
+          <label for="operatorId">Operator ID</label>
+          <input id="operatorId" type="text" maxlength="64" autocomplete="off" placeholder="operator-01 (optional)">
+          <p class="field-error" data-error-for="operatorId"></p>
+        </div>
+        <div class="field full">
+          <label for="notes">Notes</label>
+          <textarea id="notes" rows="2" maxlength="500" placeholder="Optional, non-sensitive"></textarea>
+          <p class="field-error" data-error-for="notes"></p>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" id="save-btn">Save sale</button>
+        <button type="button" id="reset-btn">Clear</button>
+      </div>
+    </form>
+
+    <footer>
+      Duplicate protection: every unsaved entry carries a one-time token, so a double
+      click or a retry after a network error cannot create a second row.
+      Never enter passwords, tokens, or full payment details here.
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var FIELDS = ['productId', 'productName', 'quantity', 'unitPrice',
+        'currency', 'paymentMethod', 'operatorId', 'notes'];
+      var form = document.getElementById('sale-form');
+      var feedback = document.getElementById('feedback');
+      var saveBtn = document.getElementById('save-btn');
+      var submissionId = null;
+      var saving = false;
+
+      function value(id) { return document.getElementById(id).value; }
+
+      function newSubmissionId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+          return window.crypto.randomUUID();
+        }
+        return 'sub_' + Date.now().toString(36) + '_' +
+          Math.random().toString(36).slice(2, 12) + Math.random().toString(36).slice(2, 12);
+      }
+
+      function setFieldError(id, message) {
+        var input = document.getElementById(id);
+        var slot = document.querySelector('[data-error-for="' + id + '"]');
+        if (message) {
+          input.classList.add('invalid');
+          slot.textContent = message;
+        } else {
+          input.classList.remove('invalid');
+          slot.textContent = '';
+        }
+      }
+
+      // Mirrors validateSale_() in Code.gs so bad input is caught before
+      // the round trip; the server always validates again.
+      function validateClient() {
+        var errors = [];
+        FIELDS.forEach(function (id) { setFieldError(id, ''); });
+
+        function fail(field, message) {
+          setFieldError(field, message);
+          errors.push(message);
+        }
+
+        if (!value('productId').trim()) fail('productId', 'product_id is required.');
+        if (!value('productName').trim()) fail('productName', 'product_name is required.');
+
+        var quantity = value('quantity').trim();
+        if (!quantity) fail('quantity', 'quantity is required.');
+        else if (!/^\+?\d+$/.test(quantity)) fail('quantity', 'quantity must be a whole number greater than zero.');
+        else if (parseInt(quantity, 10) < 1) fail('quantity', 'quantity must be greater than zero.');
+
+        var price = value('unitPrice').trim();
+        if (!price) fail('unitPrice', 'unit_price is required.');
+        else if (/^-\d/.test(price)) fail('unitPrice', 'unit_price cannot be negative.');
+        else if (/^\d+\.\d{3,}$/.test(price)) fail('unitPrice', 'unit_price must have at most two decimal places.');
+        else if (!/^\d+(\.\d{1,2})?$/.test(price)) {
+          fail('unitPrice', 'unit_price must be a number with up to two decimal places, for example 12.50.');
+        }
+
+        var currency = value('currency').trim().toUpperCase();
+        if (!/^[A-Z]{3}$/.test(currency)) {
+          fail('currency', 'currency must be a three-letter ISO 4217 code, for example USD.');
+        }
+
+        if (!value('paymentMethod')) fail('paymentMethod', 'payment_method is required.');
+
+        return errors;
+      }
+
+      function showFeedback(type, messages) {
+        feedback.hidden = false;
+        feedback.className = 'feedback ' + type;
+        feedback.textContent = '';
+        if (messages.length === 1) {
+          feedback.textContent = messages[0];
+          return;
+        }
+        var list = document.createElement('ul');
+        messages.forEach(function (message) {
+          var item = document.createElement('li');
+          item.textContent = message;
+          list.appendChild(item);
+        });
+        feedback.appendChild(list);
+      }
+
+      function hideFeedback() {
+        feedback.hidden = true;
+        feedback.textContent = '';
+      }
+
+      function setSaving(state) {
+        saving = state;
+        saveBtn.disabled = state;
+        saveBtn.textContent = state ? 'Saving\u2026' : 'Save sale';
+      }
+
+      function clearForm() {
+        form.reset();
+        submissionId = null;
+        FIELDS.forEach(function (id) { setFieldError(id, ''); });
+        document.getElementById('productId').focus();
+      }
+
+      function onResult(result) {
+        setSaving(false);
+        if (!result || !result.status) {
+          onFailure(new Error('unexpected response from the POS service'));
+          return;
+        }
+        if (result.status === 'saved') {
+          showFeedback('success', ['Saved \u2014 transaction ' + result.transactionId +
+            ' recorded at ' + result.transactionTimestamp + '.']);
+          clearForm();
+        } else if (result.status === 'duplicate') {
+          showFeedback('warn', [result.message || 'This sale was already recorded.']);
+          clearForm();
+        } else if (result.status === 'rejected') {
+          showFeedback('error', (result.errors && result.errors.length)
+            ? result.errors
+            : [result.message || 'The sale was not saved.']);
+        } else {
+          showFeedback('error', [result.message || 'The sale could not be saved. Please try again.']);
+        }
+      }
+
+      function onFailure(error) {
+        setSaving(false);
+        showFeedback('error', [
+          'Could not reach the POS service (' +
+            (error && error.message ? error.message : 'unknown error') + ').',
+          'Press "Save sale" again to retry \u2014 the same entry will not create a second row.'
+        ]);
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (saving) return;
+
+        var errors = validateClient();
+        if (errors.length) {
+          showFeedback('error', ['Fix the highlighted fields before saving.'].concat(errors));
+          return;
+        }
+
+        if (!submissionId) submissionId = newSubmissionId();
+        setSaving(true);
+        showFeedback('info', ['Saving sale\u2026']);
+
+        google.script.run
+          .withSuccessHandler(onResult)
+          .withFailureHandler(onFailure)
+          .saveTransaction({
+            submissionId: submissionId,
+            productId: value('productId'),
+            productName: value('productName'),
+            quantity: value('quantity'),
+            unitPrice: value('unitPrice'),
+            currency: value('currency'),
+            paymentMethod: value('paymentMethod'),
+            operatorId: value('operatorId'),
+            notes: value('notes')
+          });
+      });
+
+      // Any edit means a new sale, so the next submit gets a fresh token.
+      form.addEventListener('input', function () {
+        if (!saving) submissionId = null;
+      });
+
+      document.getElementById('reset-btn').addEventListener('click', function () {
+        clearForm();
+        hideFeedback();
+      });
+
+      document.getElementById('currency').addEventListener('blur', function () {
+        this.value = this.value.trim().toUpperCase();
+      });
+    })();
+  </script>
+</body>
+</html>

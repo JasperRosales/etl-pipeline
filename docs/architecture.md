@@ -4,7 +4,9 @@
 /
 ├── appscript-pos/
 │   ├── Code.gs
-│   └── index.html
+│   ├── index.html
+│   ├── Tests.gs
+│   └── README.md
 ├── scripts/
 │   ├── Get-SalesData.ps1
 │   ├── Invoke-Pipeline.ps1
