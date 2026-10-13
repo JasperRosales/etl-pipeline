@@ -1,0 +1,36 @@
+# Local configuration and secrets
+config/config.json
+config/*.local.*
+*.secret
+*.secrets
+*.pem
+*.p12
+*.key
+
+# PowerShell and local tooling
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Generated runtime data
+reports/*
+!reports/.gitkeep
+logs/*
+!logs/.gitkeep
+working/*
+!working/.gitkeep
+
+# Test and local environment output
+TestResults/
+coverage/
+.venv/
+venv/
+__pycache__/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
