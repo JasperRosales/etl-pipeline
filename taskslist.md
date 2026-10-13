@@ -31,12 +31,12 @@ Build an independently running sales-data pipeline that uses Google Sheets as it
 **Deliverable:** Agreed schema, repository skeleton, and setup instructions.
 
 ### Day 2 — Google Apps Script POS and Google Sheets
-- [ ] Implement the POS entry flow in Google Apps Script.
-- [ ] Validate required fields and numeric values before saving.
-- [ ] Write transactions to the correct Google Sheets tab.
-- [ ] Add unique transaction identifiers and timestamps.
-- [ ] Add safe error feedback and prevent accidental duplicate submissions.
-- [ ] Test that a POS submission appears correctly in the sheet.
+- [x] Implement the POS entry flow in Google Apps Script.
+- [x] Validate required fields and numeric values before saving.
+- [x] Write transactions to the correct Google Sheets tab.
+- [x] Add unique transaction identifiers and timestamps.
+- [x] Add safe error feedback and prevent accidental duplicate submissions.
+- [x] Test that a POS submission appears correctly in the sheet (deploy per `appscript-pos/README.md`, submit one sale, then run `runPosSelfTest`; offline logic check `node tests/pos-code.test.js` passes).
 
 **Deliverable:** Functional Apps Script POS writing clean, uniquely identifiable rows to Google Sheets.
 
